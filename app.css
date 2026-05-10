@@ -271,6 +271,10 @@ body {
 .warn-icon:hover .warn-tooltip { opacity: 1; }
 
 /* Tasks */
+.task-card-member {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
 .task-row {
   display: flex; align-items: center; gap: 12px; padding: 10px 0;
   border-bottom: 0.5px solid var(--border); font-size: 13px;

@@ -97,7 +97,11 @@ export default function SynapseDashboard(){
   const isLeader=activeRole==='leader';
   const defaultScreen=isLeader?'dashboard':'myproject';
   const [screen,setScreen]=useState(hasUser?defaultScreen:'dashboard');
-  const [isDark,setIsDark]=useState(false);const[loaded,setLoaded]=useState(false);
+  const getInitialDark = () => {
+    const saved = localStorage.getItem('synapse_theme');
+    return saved !== null ? saved === 'true' : true;
+  };
+  const [isDark, setIsDark] = useState(getInitialDark);const[loaded,setLoaded]=useState(false);
   const [showNotifs,setShowNotifs]=useState(false);const[showSidebar,setShowSidebar]=useState(false);
   const [bellRing,setBellRing]=useState(false);const[themeSpin,setThemeSpin]=useState(false);
   const [toasts,setToasts]=useState([]);const[fadeState,setFadeState]=useState('active');
@@ -122,7 +126,15 @@ export default function SynapseDashboard(){
   },[]);
 
   useEffect(()=>{document.body.classList.toggle('dark',isDark);},[isDark]);
-  const toggleDark=()=>{setThemeSpin(true);setTimeout(()=>setThemeSpin(false),400);setIsDark(d=>!d);};
+  const toggleDark = () => {
+    setThemeSpin(true);
+    setTimeout(() => setThemeSpin(false), 400);
+    setIsDark(d => {
+      const next = !d;
+      localStorage.setItem('synapse_theme', String(next));
+      return next;
+    });
+  };
 
   const navigate=useCallback((target)=>{if(target===screen)return;setFadeState('exit');setModal(null);
     setTimeout(()=>{setScreen(target);setFadeState('enter');setTimeout(()=>setFadeState('active'),20);},200);},[screen]);
@@ -133,7 +145,7 @@ export default function SynapseDashboard(){
   },[]);
 
   const handleLogin=(email,pass)=>{
-    if(email==='vansh@synapse.ai'&&pass==='synapse123'){initDemoData(email);setAppPhase('app');setScreen('dashboard');forceUpdate();return;}
+    if(email==='vansh@leadsquad.ai'&&pass==='synapse123'){initDemoData(email);setAppPhase('app');setScreen('dashboard');forceUpdate();return;}
     if(email==='guest'||!email){initNewUser('Guest User',email||'','');setAppPhase('roleSelect');return;}
     const existing=getData();
     if(existing?.currentUser?.email===email){setAppPhase('app');setScreen(getRoleInProject(getActiveProject()?.id)==='leader'?'dashboard':'myproject');forceUpdate();return;}
@@ -162,7 +174,7 @@ export default function SynapseDashboard(){
     <><div ref={dotRef} className="cursor-dot"/><div ref={ringRef} className="cursor-ring"/>
       <nav className="navbar">
         <div style={{display:'flex',alignItems:'center',gap:16}}>
-          <div className="nav-brand"><div className="nav-dot"/><span className="nav-title">Synapse</span><span className="nav-sub">AI Team OS</span></div>
+          <div className="nav-brand"><div className="nav-dot"/><span className="nav-title">LeadSquad</span><span className="nav-sub">AI Team Manager</span></div>
           <ProjectSwitcher onSwitch={handleProjectSwitch} onCreateNew={()=>{setModal('create');navigate('dashboard');}} onJoinNew={()=>{setModal('join');navigate('dashboard');}}/>
           <div style={{display:'flex',gap:4}}>
             {tabItems.map(t=>(<button key={t.key} className="nav-btn" onClick={()=>navigate(t.key)} style={{width:'auto',borderRadius:8,padding:'6px 14px',fontSize:13,fontWeight:600,fontFamily:'inherit',background:screen===t.key?'rgba(83,74,183,0.1)':'transparent',color:screen===t.key?'var(--primary)':'var(--text-muted)'}}>{t.label}</button>))}

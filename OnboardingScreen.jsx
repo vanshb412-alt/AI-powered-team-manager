@@ -93,7 +93,8 @@ export default function OnboardingScreen({ role, onComplete }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <InputField label="Your name" placeholder="e.g. Vansh Bansal" value={name} onChange={setName} delay={0.08} show={show} />
               <InputField label="Your role" placeholder={isLeader?'e.g. Engineering Lead':'e.g. Frontend Developer'} value={roleTitle} onChange={setRoleTitle} delay={0.16} show={show} />
-              {isLeader && <InputField label="Team name" placeholder="e.g. Team Synapse" value={teamName} onChange={setTeamName} delay={0.24} show={show} />}
+              {isLeader && <InputField label="Team name" placeholder="e.g. Team LeadSquad" value={teamName} onChange={setTeamName} delay={0.24} show={show} />}
+              <InputField label="What's your primary goal?" placeholder="e.g. Ship faster, track bugs..." value={goal} onChange={setGoal} delay={isLeader?0.32:0.24} show={show} />
               {isLeader && <InputField label="Project name" placeholder="e.g. Mobile App Redesign" value={projectName} onChange={setProjectName} delay={0.32} show={show} />}
               {!isLeader && <InputField label="Invite code" placeholder="e.g. SYN-4X2" value={joinCode} onChange={setJoinCode} mono delay={0.24} show={show} />}
               {joinError && <div style={{fontSize:12,color:'#E24B4A',padding:'8px 12px',background:'rgba(226,75,74,0.08)',borderRadius:8}}>{joinError}</div>}

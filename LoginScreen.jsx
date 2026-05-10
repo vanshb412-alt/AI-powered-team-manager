@@ -26,8 +26,8 @@ export default function LoginScreen({ onLogin }) {
         <div style={{textAlign:'center',marginBottom:24}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,marginBottom:8}}>
             <div style={{width:10,height:10,borderRadius:'50%',background:'#534AB7'}}/>
-            <span style={{fontSize:24,fontWeight:600}}>Synapse</span>
-            <span style={{fontSize:13,color:'var(--text-muted)'}}>AI Team OS</span>
+            <span style={{fontSize:24,fontWeight:600}}>LeadSquad</span>
+            <span style={{fontSize:13,color:'var(--text-muted)'}}>AI Team Manager</span>
           </div>
           <div style={{fontSize:14,color:'var(--text-muted)'}}>Manage smarter. Ship faster.</div>
         </div>
@@ -57,8 +57,8 @@ export default function LoginScreen({ onLogin }) {
         <div style={{textAlign:'center',marginTop:16,fontSize:13,color:'var(--text-muted)'}}>
           Don't have an account? <span style={{color:'#534AB7',cursor:'pointer',fontWeight:500}} onClick={()=>onLogin('guest','')}>Get started</span>
         </div>
-        <div style={{marginTop:20,padding:12,borderRadius:8,background:'var(--bg)',border:'0.5px solid var(--border)',textAlign:'center',fontSize:12,color:'var(--text-muted)'}}>
-          Demo: <strong>vansh@synapse.ai</strong> · password: <strong>synapse123</strong>
+        <div style={{marginTop:24,padding:16,background:'rgba(83,74,183,0.06)',borderRadius:12,fontSize:13,color:'var(--text-muted)',textAlign:'center'}}>
+          Demo: <strong>vansh@leadsquad.ai</strong> · password: <strong>synapse123</strong>
         </div>
       </div>
     </div>

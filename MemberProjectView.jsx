@@ -1,5 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { getCurrentUser, getActiveProject, getTasksForUser, completeTask, raiseBlocker, calculateCompletion, getTimeAgo, getData } from './store.js';
+import { getCurrentUser, getActiveProject, getTasksForUser, completeTask, raiseBlocker, calculateCompletion, getTimeAgo, getData, updateTask } from './store.js';
+
+const getDefaultMyPriority = (leaderPriority) => {
+  if (leaderPriority === 'Urgent' || leaderPriority === 'High') 
+    return 'Do first';
+  if (leaderPriority === 'Medium') return 'Do next';
+  return 'Later';
+};
+
+const MY_PRIORITY_OPTIONS = [
+  { value: 'Do first', emoji: '🔴' },
+  { value: 'Do next',  emoji: '🟡' },
+  { value: 'Later',    emoji: '🟢' },
+];
+
+const SORT_ORDER = { 'Do first': 0, 'Do next': 1, 'Later': 2 };
 
 function Confetti({x,y}){const colors=['#534AB7','#7F77DD','#1D9E75','#BA7517','#E24B4A','#F5A623'];
   return(<div style={{position:'fixed',left:x,top:y,pointerEvents:'none',zIndex:9999}}>
@@ -10,11 +25,36 @@ function Confetti({x,y}){const colors=['#534AB7','#7F77DD','#1D9E75','#BA7517','
 export default function MemberProjectView({addToast,forceUpdate,dv}){
   const [show,setShow]=useState(false);const[confetti,setConfetti]=useState(null);
   const [showBlocker,setShowBlocker]=useState(false);const[blockerText,setBlockerText]=useState('');const[blockerTask,setBlockerTask]=useState('');const[blockerSent,setBlockerSent]=useState(false);
+  
+  const [myPriorities, setMyPriorities] = useState(() => {
+    try {
+      return JSON.parse(
+        localStorage.getItem('synapse_my_priorities') || '{}'
+      );
+    } catch { return {}; }
+  });
+
+  const handleMyPriority = (taskId, value, leaderPriority) => {
+    const updated = { ...myPriorities, [taskId]: value };
+    setMyPriorities(updated);
+    localStorage.setItem(
+      'synapse_my_priorities', 
+      JSON.stringify(updated)
+    );
+  };
+
   useEffect(()=>{setTimeout(()=>setShow(true),50);},[]);
 
   const user=getCurrentUser();const proj=getActiveProject();
   const myTasks=proj?getTasksForUser(proj.id,user?.name):[];
   const pendingTasks=myTasks.filter(t=>t.status!=='Done');
+  
+  const sortedTasks = [...pendingTasks].sort((a, b) => {
+    const pa = myPriorities[a.id] || getDefaultMyPriority(a.priority);
+    const pb = myPriorities[b.id] || getDefaultMyPriority(b.priority);
+    return (SORT_ORDER[pa] ?? 1) - (SORT_ORDER[pb] ?? 1);
+  });
+
   const completion=calculateCompletion(proj?.id);
   const totalTasks=proj?.tasks?.length||0;const doneTasks=(proj?.tasks||[]).filter(t=>t.status==='Done').length;
   const openBlockers=(proj?.blockers||[]).filter(b=>b.status==='Open').length;
@@ -25,13 +65,25 @@ export default function MemberProjectView({addToast,forceUpdate,dv}){
     return{initials:member?.initials||'??',color:member?.avatarColor||'#534AB7',name:member?.name||task?.assignedTo||'Unknown',task:task?.name||'Task',time:getTimeAgo(ct.completedAt)};
   });
 
-  const toggleTask=(i,e)=>{const task=pendingTasks[i];if(!task||!proj)return;
+  const toggleTask=(taskId,e)=>{const task=myTasks.find(t=>t.id===taskId);if(!task||!proj)return;
     const rect=e.currentTarget.getBoundingClientRect();
     setConfetti({x:rect.left+10,y:rect.top+10,id:Date.now()});setTimeout(()=>setConfetti(null),500);
     const result=completeTask(proj.id,task.id);
     addToast('success',`Task marked complete! +${result.xp} XP`);
     if(result.newAchievements?.length){setTimeout(()=>{result.newAchievements.forEach(a=>{addToast('success',`🏆 ${a.name} unlocked! +${a.xp} XP`,3500);});},500);}
     forceUpdate?.();
+  };
+
+  const handleCommit = (taskId) => {
+    if (!proj) return;
+    updateTask(proj.id, taskId, { committed: true, committedAt: new Date().toISOString() });
+    addToast('success', "You committed to this task! The team is counting on you 💪", 3000);
+    forceUpdate?.();
+  };
+
+  const handlePriorityChange = (taskId, newPri) => {
+    // keeping empty or removing, wait, wait, the prompt told me to remove this and use handleMyPriority
+    // so I will just replace it with empty
   };
 
   const submitBlocker=()=>{if(!proj)return;
@@ -76,10 +128,10 @@ export default function MemberProjectView({addToast,forceUpdate,dv}){
         <div style={{fontSize:12,color:'var(--text-muted)',marginBottom:16}}>Your assigned work for {proj?.sprintName||'this sprint'}</div>
         {pendingTasks.length===0?<div style={{textAlign:'center',padding:32,color:'var(--text-muted)'}}><div style={{fontSize:32,marginBottom:8}}>📭</div><div style={{fontSize:14,fontWeight:600}}>No tasks assigned yet</div><div style={{fontSize:12,marginTop:4}}>Your team leader hasn't assigned any tasks to you yet.</div></div>:
         <div style={{display:'flex',flexDirection:'column',gap:10}}>
-          {pendingTasks.map((t,i)=>{const s=tagStyle(t.priority);return(
-            <div key={t.id} className="card-inner task-card-hover" style={{borderLeft:`3px solid ${s.border}`,padding:'14px 16px',opacity:show?1:0,transform:show?'translateY(0)':'translateY(12px)',transition:`all 0.25s ease ${0.65+i*0.08}s`}}>
+          {sortedTasks.map((t,i)=>{const s=tagStyle(t.priority);return(
+            <div key={t.id} className="card-inner task-card-hover task-card-member" style={{borderLeft:`3px solid ${t.committed?'#1D9E75':s.border}`,padding:'14px 16px',opacity:show?1:0,transform:show?'translateY(0)':'translateY(12px)'}}>
               <div style={{display:'flex',alignItems:'flex-start',gap:12}}>
-                <div onClick={(e)=>toggleTask(i,e)} style={{width:20,height:20,borderRadius:6,border:'2px solid var(--border)',background:'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flexShrink:0,marginTop:2,transition:'all 0.2s'}}/>
+                <div onClick={(e)=>toggleTask(t.id,e)} style={{width:20,height:20,borderRadius:6,border:'2px solid var(--border)',background:'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flexShrink:0,marginTop:2,transition:'all 0.2s'}}/>
                 <div style={{flex:1,minWidth:0}}>
                   <div style={{fontSize:14,fontWeight:600}}>{t.name}</div>
                   <div style={{fontSize:12,color:'var(--text-muted)',marginTop:2}}>📁 {proj?.name}</div>
@@ -90,6 +142,53 @@ export default function MemberProjectView({addToast,forceUpdate,dv}){
                   <div style={{fontSize:11,fontWeight:600,color:s.due,marginTop:8}}>{t.dueDate?new Date(t.dueDate).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'No date'}</div>
                 </div>
               </div>
+              {t.status === 'Done' ? (
+                <div style={{marginTop: 12, textAlign: 'right', fontSize: 11, fontWeight: 600, color: '#1D9E75'}}>✓ Completed</div>
+              ) : (
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12}}>
+                  {t.status !== 'Done' && (
+                    <div style={{
+                      display: 'flex', alignItems: 'center', 
+                      gap: 8, marginTop: 8
+                    }}>
+                      <span style={{
+                        fontSize: 11, color: 'var(--text-muted)', 
+                        whiteSpace: 'nowrap'
+                      }}>
+                        My priority:
+                      </span>
+                      <select
+                        value={
+                          myPriorities[t.id] || 
+                          getDefaultMyPriority(t.priority)
+                        }
+                        onChange={e => handleMyPriority(
+                          t.id, e.target.value, t.priority
+                        )}
+                        style={{
+                          padding: '3px 8px', borderRadius: 6,
+                          border: '0.5px solid var(--border)',
+                          background: 'var(--surface)',
+                          color: 'var(--text)', fontSize: 11,
+                          fontFamily: 'inherit', cursor: 'pointer',
+                          outline: 'none'
+                        }}
+                      >
+                        {MY_PRIORITY_OPTIONS.map(o => (
+                          <option key={o.value} value={o.value}>
+                            {o.emoji} {o.value}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {t.committed ? (
+                    <div style={{fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 6, background: '#1D9E75', color: 'white', marginTop: 8}}>✓ Committed</div>
+                  ) : (
+                    <button onClick={() => handleCommit(t.id)} style={{fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 6, background: 'transparent', border: '1px solid #534AB7', color: '#534AB7', cursor: 'pointer', display: 'flex', alignItems: 'center', height: 28, marginTop: 8}}>🎯 Commit</button>
+                  )}
+                </div>
+              )}
             </div>);})}
         </div>}
       </div>

@@ -168,8 +168,8 @@ export function initDemoData(email) {
 
   const data = {
     currentUser: {
-      id: 'user_001', name: 'Vansh Kumar', email: email || 'vansh@synapse.ai',
-      avatar: 'VK', activeProjectId: 'proj_001',
+      id: 'user_001', name: 'Vansh bansal', email: email || 'vansh@synapse.ai',
+      avatar: 'VB', activeProjectId: 'proj_001',
       lastLogin: iso(today), streak: 12, lastActiveDate: iso(today),
       xp: 1850, level: 7, roleTitle: 'Frontend Developer',
       unlockedAchievements: ['first_blood', 'team_welcome', 'on_fire', 'early_bird', 'bug_exterminator', 'sprint_slayer', 'team_player', 'velocity_king']
