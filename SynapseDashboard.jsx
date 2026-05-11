@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './app.css';
-import { announcements } from './data.js';
-import { getData, saveData, initDemoData, initNewUser, getCurrentUser, getActiveProject, getUserProjects, getRoleInProject, setActiveProject, generateInitials, createProject, joinProject } from './store.js';
+import { getData, saveData, initDemoData, initNewUser, getCurrentUser, getActiveProject, getUserProjects, getRoleInProject, setActiveProject, generateInitials, createProject, joinProject, getAnnouncements } from './store.js';
 
 function getDynamicNotifications(proj) {
   const notes = [];
@@ -278,7 +277,7 @@ export default function SynapseDashboard(){
       <div className={`sidebar-overlay ${showSidebar?'open':''}`} onClick={()=>setShowSidebar(false)}/>
       <div className={`sidebar ${showSidebar?'open':''}`}>
         <div className="sidebar-header"><div><div className="sidebar-title">Company Forecast</div><div className="sidebar-sub">AI-summarized org updates</div></div><button className="sidebar-close" onClick={()=>setShowSidebar(false)}>✕</button></div>
-        {announcements.map((a,i)=>(<div className="announce-card" key={i}><span className="announce-tag" style={{background:a.tagBg,color:a.tagColor}}>{a.tag}</span><div className="announce-title">{a.title}</div><div className="announce-date">{a.date}</div><div className="ai-impact"><div className="ai-impact-label">AI Impact on Your Team:</div>{a.impact}</div></div>))}
+        {getAnnouncements().map((a,i)=>(<div className="announce-card" key={i}><span className="announce-tag" style={{background:a.tagBg,color:a.tagColor}}>{a.tag}</span><div className="announce-title">{a.title}</div><div className="announce-date">{a.date}</div><div className="ai-impact"><div className="ai-impact-label">AI Impact on Your Team:</div>{a.impact}</div></div>))}
       </div>
       <div className="toast-container">{toasts.map(t=>(<div key={t.id} className={`toast ${t.exit?'exit':''}`}><div className="toast-bar" style={{background:t.type==='loading'?'var(--primary)':t.type==='success'?'var(--success)':'var(--danger)'}}/>{t.type==='loading'?<div className="toast-spinner"/>:t.type==='success'?'✓':'✕'}{t.msg}</div>))}</div>
     </>

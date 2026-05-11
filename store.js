@@ -226,3 +226,45 @@ export function clearSession() {
 export function setActiveProject(projectId) {
   const d = getData(); if (!d) return; d.currentUser.activeProjectId = projectId; saveData(d);
 }
+
+export function getAnnouncements() {
+  const proj = getActiveProject();
+  const tasks = proj?.tasks || [];
+  const members = proj?.members || [];
+  const overloaded = members.find(m => {
+    const mt = tasks.filter(t => t.assignedTo?.toLowerCase() === m.name?.toLowerCase() && t.status !== 'Done');
+    const pts = mt.reduce((s,t) => s + (t.storyPoints||3), 0);
+    return pts > 15;
+  });
+  const openBlockers = (proj?.blockers||[]).filter(b => b.status === 'Open').length;
+  const pendingCount = tasks.filter(t => t.status === 'Pending').length;
+  const doneCount = tasks.filter(t => t.status === 'Done').length;
+  const velocity = tasks.length ? Math.round((doneCount / tasks.length) * 100) : 0;
+
+  return [
+    {
+      tag: 'Hiring', tagBg: 'rgba(186,117,23,0.15)', tagColor: '#BA7517',
+      title: 'Q3 hiring freeze announced across all departments',
+      date: 'May 8, 2026',
+      impact: overloaded
+        ? `${overloaded.name} is carrying a heavy load — the hiring freeze may delay relief. Consider redistributing tasks now.`
+        : 'No immediate impact on your current team capacity. Monitor workload as sprint progresses.'
+    },
+    {
+      tag: 'Product', tagBg: 'rgba(29,158,117,0.15)', tagColor: '#1D9E75',
+      title: 'New design guidelines released by brand team',
+      date: 'May 6, 2026',
+      impact: proj
+        ? `${proj.name} may need a UI review pass. ${pendingCount} pending tasks could be affected by the new guidelines.`
+        : 'Review your active projects for any UI components that need updating.'
+    },
+    {
+      tag: 'Policy', tagBg: 'rgba(83,74,183,0.15)', tagColor: '#534AB7',
+      title: 'Remote work policy updated — core hours now 11am–4pm',
+      date: 'May 3, 2026',
+      impact: openBlockers > 0
+        ? `You have ${openBlockers} open blocker${openBlockers > 1 ? 's' : ''} — ensure standup meetings fall within new core hours to resolve them faster.`
+        : `Sprint velocity at ${velocity}%. Core hour alignment should help team sync and maintain momentum.`
+    }
+  ];
+}
