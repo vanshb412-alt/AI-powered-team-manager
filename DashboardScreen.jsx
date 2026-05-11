@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { getCurrentUser, getActiveProject, getUserProjects, calculateCompletion, calculateUserLoad, getGreeting, generateInitials, addMemberToProject, getProjectById } from './store.js';
+import { getCurrentUser, getActiveProject, getUserProjects, calculateCompletion, calculateUserLoad, getGreeting, generateInitials, addMemberToProject, getProjectById, updateTask } from './store.js';
 
 function getWeeklyData(tasks) {
   const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
@@ -67,6 +67,39 @@ function WeeklyChart({isDark,data}){const ref=useRef(null);
   return <canvas ref={ref} style={{display:'block',width:'100%'}}/>;
 }
 
+function getProjectForecast(proj) {
+  if (!proj?.tasks) return null;
+  const total = proj.tasks.filter(t => t.status !== 'Done').length;
+  const committed = proj.tasks.filter(t => t.committed && t.status !== 'Done').length;
+  const completed = proj.tasks.filter(t => t.status === 'Done').length;
+  
+  if (total === 0) return null;
+  
+  const daysActive = 7; 
+  const completionRate = completed > 0 ? (completed / (completed + total)) : 0.3;
+  const commitmentBoost = committed > 0 ? 1 + ((committed / total) * 0.2) : 1; 
+  
+  const adjustedRate = Math.min(0.95, completionRate * commitmentBoost);
+  const remainingTasks = total - (completed * adjustedRate);
+  const tasksPerDay = Math.max(0.5, completed / daysActive);
+  const daysRemaining = Math.ceil(remainingTasks / tasksPerDay);
+  
+  const forecastDate = new Date();
+  forecastDate.setDate(forecastDate.getDate() + daysRemaining);
+  
+  const confidence = Math.round(
+    50 + (completionRate * 30) + ((committed / total) * 20)
+  );
+  
+  return {
+    forecastDate: forecastDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    daysRemaining,
+    confidence,
+    committed,
+    total
+  };
+}
+
 export default function DashboardScreen({isDark,loaded,addToast,forceUpdate,dv}){
   const user=getCurrentUser();const proj=getActiveProject();
   const ups=getUserProjects().filter(up=>up.role==='leader');
@@ -75,6 +108,23 @@ export default function DashboardScreen({isDark,loaded,addToast,forceUpdate,dv})
   const [showAddMember,setShowAddMember]=useState(false);
   const [newName,setNewName]=useState('');const[newRole,setNewRole]=useState('');
   const [memberTip,setMemberTip]=useState(null);
+  
+  const currentUserName = user?.name || '';
+
+  const handleCommit = (taskId, taskName) => {
+    const selProj = getProjectById(selProjectId) || proj;
+    if (!selProj) return;
+    const task = selProj.tasks.find(t => t.id === taskId);
+    if (!task) return;
+    const updated = {
+      ...task,
+      committed: true,
+      committedAt: new Date().toISOString()
+    };
+    updateTask(selProj.id, taskId, updated);
+    addToast('success', `You committed to "${taskName}"! Your team is counting on you 💪`);
+    forceUpdate?.();
+  };
 
   useEffect(()=>{if(loaded){const t=setTimeout(()=>setAnimBars(true),200);return()=>clearTimeout(t);}},[loaded]);
   useEffect(()=>{setSelProjectId(proj?.id);},[proj?.id]);
@@ -182,6 +232,40 @@ export default function DashboardScreen({isDark,loaded,addToast,forceUpdate,dv})
               <button onClick={handleAddMember} style={{padding:'8px 12px',borderRadius:8,border:'none',background:'#534AB7',color:'white',fontSize:12,fontWeight:600,fontFamily:'inherit',cursor:'pointer',whiteSpace:'nowrap'}}>Add →</button>
             </div>
           }
+          {(()=>{
+            const forecast = getProjectForecast(selProj);
+            if(!forecast) return null;
+            return (
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(83,74,183,0.1), rgba(29,158,117,0.1))',
+                border: '0.5px solid var(--border)', borderRadius: 12,
+                padding: 16, marginTop: 16
+              }}>
+                <div style={{fontSize: 12, fontWeight: 600, color: 'var(--text)', marginBottom: 8}}>
+                  📊 AI Project Forecast
+                </div>
+                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12}}>
+                  <div>
+                    <div style={{fontSize: 11, color: 'var(--text-muted)', marginBottom: 4}}>Projected Completion</div>
+                    <div style={{fontSize: 14, fontWeight: 600, color: 'var(--primary)'}}>{forecast.forecastDate}</div>
+                    <div style={{fontSize: 10, color: 'var(--text-muted)'}}>{forecast.daysRemaining} days remaining</div>
+                  </div>
+                  <div>
+                    <div style={{fontSize: 11, color: 'var(--text-muted)', marginBottom: 4}}>AI Confidence</div>
+                    <div style={{fontSize: 14, fontWeight: 600, color: forecast.confidence > 75 ? 'var(--success)' : forecast.confidence > 50 ? 'var(--warning)' : 'var(--danger)'}}>{forecast.confidence}%</div>
+                    <div style={{fontSize: 10, color: 'var(--text-muted)'}}>{forecast.committed}/{forecast.total} committed</div>
+                  </div>
+                </div>
+                <div style={{fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.5}}>
+                  {forecast.committed === 0 
+                    ? '⚠ No team members have committed yet. Encourage your team to commit to tasks for better forecasting.' 
+                    : forecast.committed === forecast.total 
+                      ? '✓ Full team commitment detected! Completion forecast is highly reliable.' 
+                      : `${forecast.committed} team member${forecast.committed > 1 ? 's' : ''} committed. More commitments = better forecast accuracy.`}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
       <div className="two-col">
@@ -189,12 +273,36 @@ export default function DashboardScreen({isDark,loaded,addToast,forceUpdate,dv})
           <div className="card-title">Priority Tasks <span className="card-badge">{priorityTasks.length} open</span></div>
           {priorityTasks.length===0?<div style={{textAlign:'center',padding:24,color:'var(--text-muted)',fontSize:13}}>No active tasks. Assign tasks from the Task Manager.</div>:
           priorityTasks.map((t,i)=>{const s=tagStyle(t.priority);const assignee=members.find(m=>m.name?.toLowerCase()===t.assignedTo?.toLowerCase());
-            return(<div className="task-row" key={t.id||i}>
+            return(<div className="task-row" key={t.id||i} style={t.committed ? {borderLeft: '3px solid var(--success)'} : {}}>
               <div className="task-dot" style={{background:s.color}}/>
               <div className="task-name">{t.name}</div>
               <div className="member-avatar" style={{background:assignee?.avatarColor||'#534AB7',width:24,height:24,fontSize:9}}>{assignee?.initials||(t.assignedTo?.[0]||'?')}</div>
               <span className="task-tag" style={{background:s.bg,color:s.color}}>{t.status||t.priority}</span>
               <span className="task-due">{t.dueDate?new Date(t.dueDate).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'No date'}</span>
+              
+              {t.assignedTo?.toLowerCase() === currentUserName?.toLowerCase() && t.status !== 'Done' && !t.committed && (
+                <button onClick={() => handleCommit(t.id, t.name)}
+                  style={{
+                    padding: '4px 12px', borderRadius: 6,
+                    background: 'transparent', border: '1px solid var(--primary)',
+                    color: 'var(--primary)', fontSize: 11, fontWeight: 600,
+                    fontFamily: 'inherit', cursor: 'pointer',
+                    whiteSpace: 'nowrap', transition: 'all 0.2s',
+                    height: 28
+                  }}>
+                  🎯 Commit
+                </button>
+              )}
+              {t.committed && (
+                <span style={{
+                  padding: '4px 12px', borderRadius: 6,
+                  background: 'var(--success)', color: 'white',
+                  fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap',
+                  height: 28, display: 'inline-flex', alignItems: 'center'
+                }}>
+                  ✓ Committed
+                </span>
+              )}
             </div>);})}
         </div>
         <div className="card">

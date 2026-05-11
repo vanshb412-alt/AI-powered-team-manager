@@ -153,12 +153,14 @@ export function initDemoData(email) {
     { id: 't10', name: 'Performance optimization', description: 'Optimize bundle size and implement code splitting.', assignedTo: 'Priya S.', dueDate: future(2), priority: 'High', status: 'In Progress', storyPoints: 8, createdAt: ago(6), completedAt: null },
     { id: 't11', name: 'User feedback integration', description: 'Add in-app feedback widget with sentiment analysis.', assignedTo: 'Dev K.', dueDate: future(6), priority: 'Medium', status: 'Pending', storyPoints: 3, createdAt: ago(2), completedAt: null },
     { id: 't12', name: 'Fix login page CSS bug', description: 'Login button misaligned on mobile viewports.', assignedTo: 'Priya S.', dueDate: future(-1), priority: 'Medium', status: 'Done', storyPoints: 2, createdAt: ago(9), completedAt: ago(1) },
-    { id: 't13', name: 'Implement push notifications', description: 'Set up Firebase Cloud Messaging for iOS and Android push notifications. Handle foreground and background states.', assignedTo: 'Vansh Bansal', dueDate: future(2), priority: 'Urgent', status: 'Pending', storyPoints: 8, createdAt: ago(5), completedAt: null },
-    { id: 't14', name: 'Fix responsive layout on tablet', description: 'Several components break on iPad viewport. Fix navigation drawer, card grid, and modal sizing for tablet screens.', assignedTo: 'Vansh Bansal', dueDate: future(3), priority: 'High', status: 'In Progress', storyPoints: 5, createdAt: ago(4), completedAt: null },
-    { id: 't15', name: 'Write unit tests for auth module', description: 'Cover login, logout, token refresh, and session expiry edge cases. Minimum 80% coverage required.', assignedTo: 'Vansh Bansal', dueDate: future(4), priority: 'High', status: 'Pending', storyPoints: 5, createdAt: ago(3), completedAt: null },
-    { id: 't16', name: 'Optimize image loading performance', description: 'Implement lazy loading and WebP conversion for all product images. Target LCP under 2.5 seconds.', assignedTo: 'Vansh Bansal', dueDate: future(5), priority: 'Medium', status: 'Pending', storyPoints: 3, createdAt: ago(2), completedAt: null },
-    { id: 't17', name: 'Update onboarding copy', description: 'Revise the 4 onboarding screens with new marketing copy approved by the brand team. Update illustrations too.', assignedTo: 'Vansh Bansal', dueDate: future(7), priority: 'Medium', status: 'In Review', storyPoints: 2, createdAt: ago(6), completedAt: null },
+    { id: 't13', name: 'Implement push notifications', description: 'Set up Firebase Cloud Messaging for iOS and Android push notifications. Handle foreground and background states.', assignedTo: 'Vansh Bansal', dueDate: future(2), priority: 'Urgent', status: 'Done', storyPoints: 8, createdAt: ago(12), completedAt: ago(5) },
+    { id: 't14', name: 'Fix responsive layout on tablet', description: 'Several components break on iPad viewport. Fix navigation drawer, card grid, and modal sizing for tablet screens.', assignedTo: 'Vansh Bansal', dueDate: future(3), priority: 'High', status: 'Done', storyPoints: 5, createdAt: ago(10), completedAt: ago(6) },
+    { id: 't15', name: 'Write unit tests for auth module', description: 'Cover login, logout, token refresh, and session expiry edge cases. Minimum 80% coverage required.', assignedTo: 'Vansh Bansal', dueDate: future(4), priority: 'High', status: 'Done', storyPoints: 5, createdAt: ago(11), completedAt: ago(2) },
+    { id: 't16', name: 'Optimize image loading performance', description: 'Implement lazy loading and WebP conversion for all product images. Target LCP under 2.5 seconds.', assignedTo: 'Vansh Bansal', dueDate: future(5), priority: 'Medium', status: 'Done', storyPoints: 3, createdAt: ago(8), completedAt: ago(1) },
+    { id: 't17', name: 'Update onboarding copy', description: 'Revise the 4 onboarding screens with new marketing copy approved by the brand team. Update illustrations too.', assignedTo: 'Vansh Bansal', dueDate: future(7), priority: 'Medium', status: 'Done', storyPoints: 2, createdAt: ago(9), completedAt: ago(3) },
     { id: 't18', name: 'Set up error monitoring with Sentry', description: 'Integrate Sentry SDK, configure source maps, set up alert rules for critical errors in production.', assignedTo: 'Vansh Bansal', dueDate: future(9), priority: 'Low', status: 'Pending', storyPoints: 3, createdAt: ago(1), completedAt: null },
+    { id: 't19', name: 'Fix crash on profile page', description: 'App crashes when navigating to profile with empty avatar field.', assignedTo: 'Priya S.', dueDate: future(-4), priority: 'Urgent', status: 'Done', storyPoints: 2, createdAt: ago(13), completedAt: ago(5) },
+    { id: 't19b', name: 'Resolve CORS bug on API gateway', description: 'Preflight requests failing for certain origins. Update CORS headers in API gateway config.', assignedTo: 'Raj M.', dueDate: future(-5), priority: 'High', status: 'Done', storyPoints: 3, createdAt: ago(16), completedAt: ago(6) },
   ];
   const tasks2 = [
     { id: 't20', name: 'Refactor token validation', description: 'Centralize JWT validation logic into middleware.', assignedTo: 'Vansh Bansal', dueDate: future(4), priority: 'High', status: 'Pending', storyPoints: 5, createdAt: ago(3), completedAt: null },
@@ -167,10 +169,25 @@ export function initDemoData(email) {
     { id: 't23', name: 'Rate limiter middleware', description: 'Add rate limiting to auth endpoints.', assignedTo: 'Raj M.', dueDate: future(3), priority: 'Medium', status: 'In Progress', storyPoints: 5, createdAt: ago(5), completedAt: null },
     { id: 't24', name: 'Auth logging dashboard', description: 'Create admin view for auth event logs.', assignedTo: 'Raj M.', dueDate: future(7), priority: 'Low', status: 'Pending', storyPoints: 3, createdAt: ago(1), completedAt: null },
   ];
-  const completedTasks = [];
-  for (let i = 0; i < 47; i++) { completedTasks.push({ taskId: 'hist_' + i, projectId: i < 35 ? 'proj_001' : 'proj_002', completedAt: ago(Math.floor(Math.random() * 55) + 1), xpEarned: 50 }); }
-  // Add the 4 done tasks from project 1
-  ['t3', 't6', 't8', 't12'].forEach(tid => { completedTasks.push({ taskId: tid, projectId: 'proj_001', completedAt: tasks1.find(t => t.id === tid).completedAt, xpEarned: 50 }); });
+  // Build completedTasks from all Done tasks (so analytics joins work correctly)
+  const doneTasks1 = tasks1.filter(t => t.status === 'Done');
+  const completedTasks = doneTasks1.map(t => ({ taskId: t.id, projectId: 'proj_001', completedAt: t.completedAt, xpEarned: 50 }));
+  // Historical completed tasks (older sprints) — use descriptive IDs that won't clash
+  const histNames = [
+    'Fix nav bar bug','Resolve payment timeout bug','Migrate legacy API endpoints','Fix profile image upload bug',
+    'Refactor user service','Design sprint review slides','Fix broken unit tests','Set up staging environment',
+    'Implement dark mode toggle','Fix dashboard crash bug','Write API documentation','Resolve CORS bug',
+    'Optimize SQL queries','Fix email notification bug','Set up CI/CD pipeline','Conduct code review',
+    'Fix memory leak in worker','Implement search feature','Update dependencies','Fix scroll bug on iOS',
+    'Add export to CSV','Resolve websocket bug','Set up load balancer','Fix date parsing bug',
+    'Implement analytics events','Write E2E tests','Fix broken build bug','Redesign settings page',
+    'Resolve auth race condition bug','Add rate limiting','Fix font rendering bug','Profile memory usage',
+    'Fix checkout flow bug','Implement lazy loading','Migrate to TypeScript',
+  ];
+  histNames.forEach((name, i) => {
+    const daysAgo = 7 + Math.floor(i * 1.5);
+    completedTasks.push({ taskId: 'hist_' + i, projectId: i < 28 ? 'proj_001' : 'proj_002', taskName: name, completedAt: ago(daysAgo), xpEarned: 50 });
+  });
 
   const data = {
     currentUser: {

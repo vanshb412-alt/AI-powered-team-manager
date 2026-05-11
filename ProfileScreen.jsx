@@ -53,6 +53,15 @@ export default function ProfileScreen({ onNavigate, role, dv }) {
               </div>
               <div style={{ textAlign: 'right', flexShrink: 0 }}>
                 <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 10px', borderRadius: 8, background: `${s.pr}15`, color: s.pr }}>{t.priority}</span>
+                {t.committed && (
+                  <span style={{
+                    fontSize: 10, fontWeight: 600, padding: '2px 7px',
+                    borderRadius: 20, background: 'var(--success)',
+                    color: 'white', marginLeft: 4
+                  }}>
+                    ✓ Committed
+                  </span>
+                )}
                 <div style={{ fontSize: 11, fontWeight: 600, color: s.due, marginTop: 8 }}>{t.dueDate ? new Date(t.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No date'}</div>
               </div>
             </div>
