@@ -209,7 +209,7 @@ export default function SynapseDashboard(){
     if(email==='guest'||!email){initNewUser('Guest User',email||'','');setAppPhase('roleSelect');return;}
     const existing=getData();
     if(existing?.currentUser?.email===email){setAppPhase('app');setScreen(getRoleInProject(getActiveProject()?.id)==='leader'?'dashboard':'myproject');forceUpdate();return;}
-    initNewUser('New User',email,'');setAppPhase('roleSelect');
+    initNewUser('', email, ''); setAppPhase('roleSelect');
   };
 
   const handleRoleSelect=(role)=>{setSelectedRole(role);setAppPhase('onboarding');};

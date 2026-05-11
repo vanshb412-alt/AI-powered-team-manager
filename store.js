@@ -153,11 +153,17 @@ export function initDemoData(email) {
     { id: 't10', name: 'Performance optimization', description: 'Optimize bundle size and implement code splitting.', assignedTo: 'Priya S.', dueDate: future(2), priority: 'High', status: 'In Progress', storyPoints: 8, createdAt: ago(6), completedAt: null },
     { id: 't11', name: 'User feedback integration', description: 'Add in-app feedback widget with sentiment analysis.', assignedTo: 'Dev K.', dueDate: future(6), priority: 'Medium', status: 'Pending', storyPoints: 3, createdAt: ago(2), completedAt: null },
     { id: 't12', name: 'Fix login page CSS bug', description: 'Login button misaligned on mobile viewports.', assignedTo: 'Priya S.', dueDate: future(-1), priority: 'Medium', status: 'Done', storyPoints: 2, createdAt: ago(9), completedAt: ago(1) },
+    { id: 't13', name: 'Implement push notifications', description: 'Set up Firebase Cloud Messaging for iOS and Android push notifications. Handle foreground and background states.', assignedTo: 'Vansh Bansal', dueDate: future(2), priority: 'Urgent', status: 'Pending', storyPoints: 8, createdAt: ago(5), completedAt: null },
+    { id: 't14', name: 'Fix responsive layout on tablet', description: 'Several components break on iPad viewport. Fix navigation drawer, card grid, and modal sizing for tablet screens.', assignedTo: 'Vansh Bansal', dueDate: future(3), priority: 'High', status: 'In Progress', storyPoints: 5, createdAt: ago(4), completedAt: null },
+    { id: 't15', name: 'Write unit tests for auth module', description: 'Cover login, logout, token refresh, and session expiry edge cases. Minimum 80% coverage required.', assignedTo: 'Vansh Bansal', dueDate: future(4), priority: 'High', status: 'Pending', storyPoints: 5, createdAt: ago(3), completedAt: null },
+    { id: 't16', name: 'Optimize image loading performance', description: 'Implement lazy loading and WebP conversion for all product images. Target LCP under 2.5 seconds.', assignedTo: 'Vansh Bansal', dueDate: future(5), priority: 'Medium', status: 'Pending', storyPoints: 3, createdAt: ago(2), completedAt: null },
+    { id: 't17', name: 'Update onboarding copy', description: 'Revise the 4 onboarding screens with new marketing copy approved by the brand team. Update illustrations too.', assignedTo: 'Vansh Bansal', dueDate: future(7), priority: 'Medium', status: 'In Review', storyPoints: 2, createdAt: ago(6), completedAt: null },
+    { id: 't18', name: 'Set up error monitoring with Sentry', description: 'Integrate Sentry SDK, configure source maps, set up alert rules for critical errors in production.', assignedTo: 'Vansh Bansal', dueDate: future(9), priority: 'Low', status: 'Pending', storyPoints: 3, createdAt: ago(1), completedAt: null },
   ];
   const tasks2 = [
-    { id: 't20', name: 'Refactor token validation', description: 'Centralize JWT validation logic into middleware.', assignedTo: 'Vansh Kumar', dueDate: future(4), priority: 'High', status: 'Pending', storyPoints: 5, createdAt: ago(3), completedAt: null },
-    { id: 't21', name: 'Add OAuth2 support', description: 'Integrate Google and GitHub OAuth2 providers.', assignedTo: 'Vansh Kumar', dueDate: future(6), priority: 'Medium', status: 'Pending', storyPoints: 8, createdAt: ago(2), completedAt: null },
-    { id: 't22', name: 'Fix session timeout bug', description: 'Sessions expiring despite active usage.', assignedTo: 'Vansh Kumar', dueDate: future(1), priority: 'Urgent', status: 'In Progress', storyPoints: 3, createdAt: ago(4), completedAt: null },
+    { id: 't20', name: 'Refactor token validation', description: 'Centralize JWT validation logic into middleware.', assignedTo: 'Vansh Bansal', dueDate: future(4), priority: 'High', status: 'Pending', storyPoints: 5, createdAt: ago(3), completedAt: null },
+    { id: 't21', name: 'Add OAuth2 support', description: 'Integrate Google and GitHub OAuth2 providers.', assignedTo: 'Vansh Bansal', dueDate: future(6), priority: 'Medium', status: 'Pending', storyPoints: 8, createdAt: ago(2), completedAt: null },
+    { id: 't22', name: 'Fix session timeout bug', description: 'Sessions expiring despite active usage.', assignedTo: 'Vansh Bansal', dueDate: future(1), priority: 'Urgent', status: 'In Progress', storyPoints: 3, createdAt: ago(4), completedAt: null },
     { id: 't23', name: 'Rate limiter middleware', description: 'Add rate limiting to auth endpoints.', assignedTo: 'Raj M.', dueDate: future(3), priority: 'Medium', status: 'In Progress', storyPoints: 5, createdAt: ago(5), completedAt: null },
     { id: 't24', name: 'Auth logging dashboard', description: 'Create admin view for auth event logs.', assignedTo: 'Raj M.', dueDate: future(7), priority: 'Low', status: 'Pending', storyPoints: 3, createdAt: ago(1), completedAt: null },
   ];
@@ -168,7 +174,7 @@ export function initDemoData(email) {
 
   const data = {
     currentUser: {
-      id: 'user_001', name: 'Vansh bansal', email: email || 'vansh@synapse.ai',
+      id: 'user_001', name: 'Vansh Bansal', email: email || 'vansh@leadsquad.ai',
       avatar: 'VB', activeProjectId: 'proj_001',
       lastLogin: iso(today), streak: 12, lastActiveDate: iso(today),
       xp: 1850, level: 7, roleTitle: 'Frontend Developer',
@@ -178,7 +184,7 @@ export function initDemoData(email) {
       {
         id: 'proj_001', name: 'Mobile App Redesign', sprintName: 'Sprint 14', createdBy: 'user_001', inviteCode: 'MOB-001',
         members: [
-          { userId: 'user_001', name: 'Vansh Kumar', role: 'Frontend Developer', initials: 'VK', joinedAs: 'leader', avatarColor: '#534AB7' },
+          { userId: 'user_001', name: 'Vansh Bansal', role: 'Frontend Developer', initials: 'VB', joinedAs: 'leader', avatarColor: '#534AB7' },
           { userId: 'user_002', name: 'Priya S.', role: 'Frontend', initials: 'PS', joinedAs: 'member', avatarColor: '#E24B4A' },
           { userId: 'user_003', name: 'Raj M.', role: 'Backend', initials: 'RM', joinedAs: 'member', avatarColor: '#534AB7' },
           { userId: 'user_004', name: 'Anika R.', role: 'Design', initials: 'AR', joinedAs: 'member', avatarColor: '#BA7517' },
@@ -193,7 +199,7 @@ export function initDemoData(email) {
         id: 'proj_002', name: 'Auth Module Refactor', sprintName: 'Sprint 2', createdBy: 'user_003', inviteCode: 'AUTH-02',
         members: [
           { userId: 'user_003', name: 'Raj M.', role: 'Tech Lead', initials: 'RM', joinedAs: 'leader', avatarColor: '#534AB7' },
-          { userId: 'user_001', name: 'Vansh Kumar', role: 'Frontend Developer', initials: 'VK', joinedAs: 'member', avatarColor: '#1D9E75' },
+          { userId: 'user_001', name: 'Vansh Bansal', role: 'Frontend Developer', initials: 'VB', joinedAs: 'member', avatarColor: '#1D9E75' },
         ], tasks: tasks2, blockers: [], createdAt: ago(14)
       },
     ],
